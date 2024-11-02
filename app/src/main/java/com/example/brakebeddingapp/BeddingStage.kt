@@ -26,12 +26,7 @@ data class BeddingStage(
     override fun describeContents(): Int = 0
 
     companion object CREATOR : Parcelable.Creator<BeddingStage> {
-        override fun createFromParcel(parcel: Parcel): BeddingStage {
-            return BeddingStage(parcel)
-        }
-
-        override fun newArray(size: Int): Array<BeddingStage?> {
-            return arrayOfNulls(size)
-        }
+        override fun createFromParcel(parcel: Parcel): BeddingStage = BeddingStage(parcel)
+        override fun newArray(size: Int): Array<BeddingStage?> = arrayOfNulls(size)
     }
 }

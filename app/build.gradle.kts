@@ -37,8 +37,9 @@ android {
     buildFeatures {
         compose = true
     }
+
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.12" // Ensure this matches your Compose version
+        kotlinCompilerExtensionVersion = "1.5.12" // Make sure this matches the Compose compiler version
     }
 }
 
@@ -48,13 +49,15 @@ dependencies {
     implementation("androidx.core:core-ktx:1.7.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.0")
     implementation("androidx.activity:activity-ktx:1.4.0")
+    implementation("androidx.recyclerview:recyclerview:1.2.1")
 
-    // Compose UI dependencies
-    val composeVersion = "1.0.5" // Specify a compatible Compose version
-    implementation("androidx.compose.ui:ui:$composeVersion")
-    implementation("androidx.compose.material:material:$composeVersion")
-    implementation("androidx.compose.ui:ui-tooling-preview:$composeVersion")
-    debugImplementation("androidx.compose.ui:ui-tooling:$composeVersion")
+    implementation("com.google.code.gson:gson:2.8.8")
+
+    // Compose dependencies
+    implementation("androidx.compose.ui:ui:1.5.0")
+    implementation("androidx.compose.material:material:1.5.0")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.5.0")
+    implementation("androidx.compose.runtime:runtime-livedata:1.5.0")
 
     // Test dependencies
     testImplementation("junit:junit:4.13.2")

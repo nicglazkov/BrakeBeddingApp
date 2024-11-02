@@ -1,4 +1,4 @@
-<!-- res/layout/activity_settings.xml -->
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -17,14 +17,14 @@
         android:id="@+id/startSpeedEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Start Speed (mph)"
+        android:hint="Start Speed"
         android:inputType="numberDecimal" />
 
     <EditText
         android:id="@+id/targetSpeedEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Target Speed (mph)"
+        android:hint="Target Speed"
         android:inputType="numberDecimal" />
 
     <EditText
@@ -40,9 +40,16 @@
         android:layout_height="wrap_content"
         android:text="Add Stage" />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/stagesRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
     <Button
         android:id="@+id/startProcedureButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Start Bedding Procedure" />
+        android:text="Start Procedure" />
+
 </LinearLayout>
