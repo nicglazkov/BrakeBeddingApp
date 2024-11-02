@@ -1,4 +1,3 @@
-<!-- res/layout/activity_main.xml -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -20,7 +19,15 @@
         android:layout_marginTop="20dp"
         android:background="@android:color/darker_gray" />
 
-    <!-- New Button to Open Settings Activity -->
+    <!-- Instruction TextView -->
+    <TextView
+        android:id="@+id/instructionTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Instruction"
+        android:textSize="18sp" />
+
     <Button
         android:id="@+id/openSettingsButton"
         android:layout_width="wrap_content"
