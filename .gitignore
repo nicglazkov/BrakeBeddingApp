@@ -1,0 +1,80 @@
+# Ignore Android Studio project files
+*.iml
+.idea/
+.gradle/
+local.properties
+
+# Ignore Gradle files
+/build/
+.externalNativeBuild/
+.cxx/
+captures/
+
+# Ignore macOS files
+.DS_Store
+
+# Ignore log files
+*.log
+
+# Ignore generated files
+/generated/
+*/build/
+
+# Ignore miscellaneous files
+*.apk
+*.ap_
+*.db
+*.db-journal
+*.lock
+*.p12
+
+# Ignore ProGuard files
+proguard/
+*.pro
+
+# Ignore IntelliJ project-specific files
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/assetWizardSettings.xml
+.idea/dictionaries
+.idea/libraries
+
+# Ignore JetBrains .idea files (metadata)
+.idea/modules.xml
+.idea/navEditor.xml
+.idea/.name
+
+# Ignore dependency caches (unnecessary)
+.idea/caches/
+.idea/httpRequests/
+.idea/jsLibraryMappings.xml
+.idea/gradle.xml
+
+# Ignore Android Studio specific cache
+/.idea/caches/
+/.idea/libraries/
+/.idea/modules.xml
+.idea/assetsWizardSettings.xml
+.idea/navEditor.xml
+
+# Ignore local keystore files (useful for signing)
+*.jks
+*.keystore
+
+# Ignore Kotlin/JS build folders
+build/js/
+
+# Ignore NDK directories
+**/obj/
+**/libs/
+
+# Ignore virtual environment for Python (if any)
+.venv/
+
+# Ignore Firebase files
+google-services.json
+
+# Ignore Yarn and Node files
+node_modules/
+yarn-error.log
+yarn.lock

@@ -1,0 +1,48 @@
+<!-- res/layout/activity_settings.xml -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/numberOfStopsEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Number of Stops"
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/startSpeedEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Start Speed (mph)"
+        android:inputType="numberDecimal" />
+
+    <EditText
+        android:id="@+id/targetSpeedEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Target Speed (mph)"
+        android:inputType="numberDecimal" />
+
+    <EditText
+        android:id="@+id/gapDistanceEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Gap Distance (miles)"
+        android:inputType="numberDecimal" />
+
+    <Button
+        android:id="@+id/addStageButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Stage" />
+
+    <Button
+        android:id="@+id/startProcedureButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Start Bedding Procedure" />
+</LinearLayout>

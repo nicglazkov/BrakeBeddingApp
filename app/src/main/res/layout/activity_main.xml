@@ -1,0 +1,30 @@
+<!-- res/layout/activity_main.xml -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/speedTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Speed: 0 mph"
+        android:textSize="24sp" />
+
+    <View
+        android:id="@+id/statusView"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="20dp"
+        android:background="@android:color/darker_gray" />
+
+    <!-- New Button to Open Settings Activity -->
+    <Button
+        android:id="@+id/openSettingsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Open Settings" />
+</LinearLayout>
