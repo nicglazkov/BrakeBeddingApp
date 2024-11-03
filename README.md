@@ -1,6 +1,6 @@
 # Brake Bedding App
 
-An Android app to help safely and effectively bed in new brake pads and rotors. This app guides you through the brake bedding procedure with real-time speed monitoring, countdown timers, and visual/audio cues.
+An Android app to help effectively bed in new brake pads and rotors. This app guides you through the brake bedding procedure with real-time speed monitoring, countdown timers, and visual cues.
 
 ## Features
 
@@ -33,11 +33,11 @@ An Android app to help safely and effectively bed in new brake pads and rotors. 
 
 1. Launch the app and tap "Settings"
 2. For each stage, configure:
-    - Number of stops
-    - Starting speed
-    - Target speed after braking
-    - Distance between stops
-    - Braking intensity
+   - Number of stops
+   - Starting speed
+   - Target speed after braking
+   - Distance between stops
+   - Braking intensity
 3. Add a cooldown stage
 4. Save your configuration
 
@@ -46,9 +46,9 @@ An Android app to help safely and effectively bed in new brake pads and rotors. 
 1. Find a safe, empty road
 2. Press "Start" in the app
 3. Follow the on-screen instructions:
-    - GREEN: Accelerate/drive
-    - BLUE: Hold speed
-    - RED: Apply brakes
+   - GREEN: Accelerate/drive
+   - BLUE: Hold speed
+   - RED: Apply brakes
 4. Complete all cycles in each stage
 5. Follow the cooldown procedure
 
@@ -57,7 +57,7 @@ An Android app to help safely and effectively bed in new brake pads and rotors. 
 Here's a common brake bedding procedure:
 1. 20 light slowdowns from 42 mph to 18 mph, with 0.30 miles between each
 2. 10 medium slowdowns from 54 mph to 30 mph, with 0.62 miles between each
-3. 10 hard slowdowns (without activating ABS) from 72 mph to 30 mph, minimal distance
+3. 10 hard slowdowns (without activating ABS) from 72 mph to 30 mph, minimal distance between each
 4. Cool down by driving 6 miles with minimal braking
 
 ## Safety
@@ -86,10 +86,7 @@ git clone https://github.com/nicglazkov/BrakeBeddingApp.git
 3. Build using Gradle
 
 ## License
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Support
-For support, please open an issue on the GitHub repository.
+This project is licensed under the Apache-2.0 license - see the LICENSE file for details.
 
 ## Disclaimer
 This app is provided as-is, without any warranty. Users are responsible for their own safety and should follow manufacturer recommendations for brake bedding procedures.
