@@ -1,4 +1,4 @@
-# Brake Bedding Assistant
+# Brake Bedding App
 
 An Android app to help safely and effectively bed in new brake pads and rotors. This app guides you through the brake bedding procedure with real-time speed monitoring, countdown timers, and visual/audio cues.
 
@@ -80,7 +80,7 @@ Here's a common brake bedding procedure:
 ### Building
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/brake-bedding-app.git
+git clone https://github.com/nicglazkov/BrakeBeddingApp.git
 ```
 2. Open in Android Studio
 3. Build using Gradle
