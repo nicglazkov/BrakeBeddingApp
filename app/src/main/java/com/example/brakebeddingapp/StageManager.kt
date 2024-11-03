@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlin.math.abs
+import kotlin.math.max
 
 class StageManager(
     private val context: Context,
@@ -20,15 +21,16 @@ class StageManager(
     private var currentStageIndex = 0
     private var currentCycleCount = 0
     private var currentState = State.IDLE
-    private var startLocation: android.location.Location? = null
     private var currentSpeed = 0.0
     private var countdownSeconds = 3
     private val SPEED_TOLERANCE = 2.0  // mph
     private val MAX_SPEED_OVERAGE = 5.0  // mph
+    private var remainingDistance = 0.0
+    private var lastUpdateTime = System.currentTimeMillis()
 
     private enum class State {
         IDLE,
-        DECELERATING,  // State for when speed is too high
+        DECELERATING,
         ACCELERATING,
         HOLDING_SPEED,
         COUNTDOWN,
@@ -65,9 +67,9 @@ class StageManager(
     }
 
     private fun startCycle() {
-        // Check initial speed state
         checkInitialSpeedState()
-        startLocation = null
+        remainingDistance = getCurrentStage().gapDistance
+        lastUpdateTime = System.currentTimeMillis()
         updateUI("Cycle ${currentCycleCount + 1} of ${getCurrentStage().numberOfStops}")
         updateInstructions()
     }
@@ -89,39 +91,69 @@ class StageManager(
     }
 
     fun updateSpeed(newSpeed: Double) {
+        val currentTime = System.currentTimeMillis()
+        val elapsedTime = (currentTime - lastUpdateTime) / 1000.0 // Convert to seconds
+        lastUpdateTime = currentTime
+
         currentSpeed = newSpeed
-        // Format speed with one decimal place
         speedTextView.text = "Speed: ${String.format("%.1f", newSpeed)} mph"
+
+        // Update distance if we're in the driving gap phase
+        if (currentState == State.DRIVING_GAP && currentSpeed > 0) {
+            // Calculate distance traveled since last update
+            val distanceTraveled = (currentSpeed * elapsedTime) / 3600.0 // Convert to miles (mph * hours)
+            remainingDistance = max(0.0, remainingDistance - distanceTraveled)
+            updateGapDistance()
+
+            if (remainingDistance <= 0) {
+                completeCycle()
+            }
+        }
 
         when (currentState) {
             State.DECELERATING -> handleDecelerating()
             State.ACCELERATING -> handleAccelerating()
             State.HOLDING_SPEED -> handleHoldingSpeed()
             State.BRAKING -> handleBraking()
-            State.DRIVING_GAP -> handleDrivingGap()
+            State.DRIVING_GAP -> updateGapDistance()
             else -> {} // No action needed for other states
         }
     }
 
+    // We don't need updateLocation anymore since we're calculating based on speed
     fun updateLocation(location: android.location.Location) {
-        when (currentState) {
-            State.DRIVING_GAP -> {
-                if (startLocation == null) {
-                    startLocation = location
-                } else {
-                    val distanceTraveled = startLocation!!.distanceTo(location) * 0.000621371 // Convert meters to miles
-                    val currentStage = getCurrentStage()
-                    if (distanceTraveled >= currentStage.gapDistance) {
-                        completeCycle()
-                    } else {
-                        // Update remaining distance
-                        val remainingDistance = (currentStage.gapDistance - distanceTraveled).toFloat()
-                        updateUI("Cycle ${currentCycleCount + 1}: Drive ${String.format("%.1f", remainingDistance)} more miles")
-                    }
-                }
-            }
-            else -> {} // No action needed for other states
+        // This can be empty now or used just for backup distance calculation
+    }
+
+
+    private fun updateGapDistance() {
+        val timeEstimate = if (currentSpeed > 0) {
+            (remainingDistance / currentSpeed) * 60.0 // minutes
+        } else {
+            0.0
         }
+
+        val minutesRemaining = timeEstimate.toInt()
+        val secondsRemaining = ((timeEstimate - minutesRemaining) * 60).toInt()
+
+        val timeString = if (timeEstimate > 0) {
+            if (minutesRemaining > 0) {
+                "$minutesRemaining:${String.format("%02d", secondsRemaining)} min"
+            } else {
+                "$secondsRemaining sec"
+            }
+        } else {
+            ""
+        }
+
+        val distanceStr = String.format("%.2f", remainingDistance)
+        val message = if (remainingDistance > 0) {
+            "$distanceStr miles left${if (timeString.isNotEmpty()) ", $timeString" else ""}"
+        } else {
+            "Distance complete"
+        }
+
+        instructionTextView.text = message
     }
 
     private fun handleDecelerating() {
@@ -130,17 +162,14 @@ class StageManager(
 
         when {
             speedDiff > MAX_SPEED_OVERAGE -> {
-                // Still too fast, stay in DECELERATING state
                 updateInstructions()
             }
             abs(speedDiff) <= SPEED_TOLERANCE -> {
-                // Within acceptable range
                 currentState = State.HOLDING_SPEED
                 updateInstructions()
                 startSpeedHoldingTimer()
             }
             speedDiff < -SPEED_TOLERANCE -> {
-                // Now too slow, switch to accelerating
                 currentState = State.ACCELERATING
                 updateInstructions()
             }
@@ -153,12 +182,10 @@ class StageManager(
 
         when {
             speedDiff > MAX_SPEED_OVERAGE -> {
-                // Too fast now
                 currentState = State.DECELERATING
                 updateInstructions()
             }
             abs(speedDiff) <= SPEED_TOLERANCE -> {
-                // Within acceptable range
                 currentState = State.HOLDING_SPEED
                 updateInstructions()
                 startSpeedHoldingTimer()
@@ -186,13 +213,10 @@ class StageManager(
         val currentStage = getCurrentStage()
         if (currentSpeed <= currentStage.targetSpeed) {
             currentState = State.DRIVING_GAP
-            startLocation = null
+            remainingDistance = currentStage.gapDistance
+            lastUpdateTime = System.currentTimeMillis()
             updateInstructions()
         }
-    }
-
-    private fun handleDrivingGap() {
-        // Most logic handled in updateLocation
     }
 
     private fun startSpeedHoldingTimer() {
@@ -241,7 +265,7 @@ class StageManager(
             State.ACCELERATING -> "Accelerate to ${currentStage.startSpeed.toInt()} mph"
             State.HOLDING_SPEED -> "Hold speed at ${currentStage.startSpeed.toInt()} mph"
             State.BRAKING -> "BRAKE to ${currentStage.targetSpeed.toInt()} mph"
-            State.DRIVING_GAP -> "Drive for ${currentStage.gapDistance} miles"
+            State.DRIVING_GAP -> "${String.format("%.2f", remainingDistance)} miles left"
             else -> ""
         }
 
