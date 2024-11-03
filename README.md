@@ -91,7 +91,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Support
 For support, please open an issue on the GitHub repository.
 
-[Consider adding badges here for build status, latest version, etc.]
-
 ## Disclaimer
 This app is provided as-is, without any warranty. Users are responsible for their own safety and should follow manufacturer recommendations for brake bedding procedures.
