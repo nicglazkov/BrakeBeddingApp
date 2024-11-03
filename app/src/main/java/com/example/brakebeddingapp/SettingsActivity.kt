@@ -17,6 +17,8 @@ import com.google.gson.Gson
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
+import com.google.gson.JsonObject
+import com.google.gson.JsonSerializer
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
 
@@ -186,56 +188,98 @@ class SettingsActivity : AppCompatActivity() {
     private fun loadSavedStages() {
         val sharedPreferences = getSharedPreferences("BrakeBeddingApp", Context.MODE_PRIVATE)
         val stagesJson = sharedPreferences.getString("stages", null)
-
         if (stagesJson != null) {
             try {
-                // Create Gson instance with custom deserializer
                 val gson = Gson().newBuilder()
-                    .registerTypeAdapter(BeddingStage::class.java, object : JsonDeserializer<BeddingStage> {
+                    .registerTypeAdapter(Stage::class.java, object : JsonDeserializer<Stage> {
                         override fun deserialize(
                             json: JsonElement,
                             typeOfT: Type,
                             context: JsonDeserializationContext
-                        ): BeddingStage {
+                        ): Stage {
                             val jsonObject = json.asJsonObject
+                            val type = jsonObject.get("type")?.asString
 
-                            val numberOfStops = jsonObject.get("numberOfStops").asInt
-                            val startSpeed = jsonObject.get("startSpeed").asDouble
-                            val targetSpeed = jsonObject.get("targetSpeed").asDouble
-                            val gapDistance = jsonObject.get("gapDistance").asDouble
-
-                            // Try to get braking intensity, default to MODERATE if not present
-                            val brakingIntensity = try {
-                                val intensityStr = jsonObject.get("brakingIntensity").asString
-                                BrakingIntensity.valueOf(intensityStr)
-                            } catch (e: Exception) {
-                                BrakingIntensity.MODERATE
+                            return when (type) {
+                                "bedding" -> {
+                                    val numberOfStops = jsonObject.get("numberOfStops").asInt
+                                    val startSpeed = jsonObject.get("startSpeed").asDouble
+                                    val targetSpeed = jsonObject.get("targetSpeed").asDouble
+                                    val gapDistance = jsonObject.get("gapDistance").asDouble
+                                    val brakingIntensity = try {
+                                        val intensityStr = jsonObject.get("brakingIntensity").asString
+                                        BrakingIntensity.valueOf(intensityStr)
+                                    } catch (e: Exception) {
+                                        BrakingIntensity.MODERATE
+                                    }
+                                    BeddingStage(
+                                        numberOfStops = numberOfStops,
+                                        startSpeed = startSpeed,
+                                        targetSpeed = targetSpeed,
+                                        gapDistance = gapDistance,
+                                        brakingIntensity = brakingIntensity
+                                    )
+                                }
+                                "cooldown" -> {
+                                    val distance = jsonObject.get("distance").asDouble
+                                    CooldownStage(distance = distance)
+                                }
+                                else -> {
+                                    // For backward compatibility with old data format
+                                    val numberOfStops = jsonObject.get("numberOfStops").asInt
+                                    val startSpeed = jsonObject.get("startSpeed").asDouble
+                                    val targetSpeed = jsonObject.get("targetSpeed").asDouble
+                                    val gapDistance = jsonObject.get("gapDistance").asDouble
+                                    val brakingIntensity = BrakingIntensity.MODERATE
+                                    BeddingStage(
+                                        numberOfStops = numberOfStops,
+                                        startSpeed = startSpeed,
+                                        targetSpeed = targetSpeed,
+                                        gapDistance = gapDistance,
+                                        brakingIntensity = brakingIntensity
+                                    )
+                                }
                             }
-
-                            return BeddingStage(
-                                numberOfStops = numberOfStops,
-                                startSpeed = startSpeed,
-                                targetSpeed = targetSpeed,
-                                gapDistance = gapDistance,
-                                brakingIntensity = brakingIntensity
-                            )
                         }
                     })
                     .create()
 
-                val type = object : TypeToken<List<BeddingStage>>() {}.type
-                val loadedStages = gson.fromJson<List<BeddingStage>>(stagesJson, type)
-                stages.addAll(loadedStages ?: emptyList())
-            } catch (e: Exception) {
-                // If there's any error, clear the stages and show an error
+                val type = object : TypeToken<List<Stage>>() {}.type
+                val loadedStages = gson.fromJson<List<Stage>>(stagesJson, type) ?: emptyList()
                 stages.clear()
+                stages.addAll(loadedStages)
+            } catch (e: Exception) {
+                e.printStackTrace()
                 Toast.makeText(this, "Error loading saved stages", Toast.LENGTH_SHORT).show()
+                stages.clear()
             }
         }
     }
 
     private fun saveStages() {
+        val gson = Gson().newBuilder()
+            .registerTypeAdapter(Stage::class.java, JsonSerializer<Stage> { src, typeOfSrc, context ->
+                val json = JsonObject()
+                when (src) {
+                    is BeddingStage -> {
+                        json.addProperty("type", "bedding")
+                        json.addProperty("numberOfStops", src.numberOfStops)
+                        json.addProperty("startSpeed", src.startSpeed)
+                        json.addProperty("targetSpeed", src.targetSpeed)
+                        json.addProperty("gapDistance", src.gapDistance)
+                        json.addProperty("brakingIntensity", src.brakingIntensity.name)
+                    }
+                    is CooldownStage -> {
+                        json.addProperty("type", "cooldown")
+                        json.addProperty("distance", src.distance)
+                    }
+                }
+                json
+            })
+            .create()
+
         val sharedPreferences = getSharedPreferences("BrakeBeddingApp", Context.MODE_PRIVATE)
-        sharedPreferences.edit().putString("stages", Gson().toJson(stages)).apply()
+        sharedPreferences.edit().putString("stages", gson.toJson(stages)).apply()
     }
+
 }
