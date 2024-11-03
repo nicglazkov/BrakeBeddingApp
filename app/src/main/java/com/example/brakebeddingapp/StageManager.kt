@@ -43,6 +43,40 @@ class StageManager(
         loadStages()
     }
 
+    private fun handleDrivingGap() {
+        val timeEstimate = if (currentSpeed > 0) {
+            (remainingDistance / currentSpeed) * 60.0 // minutes
+        } else {
+            0.0
+        }
+
+        val minutesRemaining = timeEstimate.toInt()
+        val secondsRemaining = ((timeEstimate - minutesRemaining) * 60).toInt()
+
+        val timeString = if (timeEstimate > 0) {
+            if (minutesRemaining > 0) {
+                "$minutesRemaining:${String.format("%02d", secondsRemaining)} min"
+            } else {
+                "$secondsRemaining sec"
+            }
+        } else {
+            ""
+        }
+
+        val distanceStr = String.format("%.2f", remainingDistance)
+        if (remainingDistance <= 0) {
+            val nextStage = if (currentCycleCount + 1 < getCurrentStage().numberOfStops) {
+                completeCycle()
+            } else {
+                completeStage()
+            }
+            return
+        }
+
+        val message = "$distanceStr miles left${if (timeString.isNotEmpty()) ", $timeString" else ""}"
+        instructionTextView.text = message
+    }
+
     private fun updateProgress() {
         val currentStage = getCurrentStage()
         val stageInfo = StringBuilder()
@@ -103,9 +137,20 @@ class StageManager(
     }
 
     private fun startCycle() {
-        checkInitialSpeedState()
-        remainingDistance = getCurrentStage().gapDistance
+        val currentStage = getCurrentStage()
+        // Initialize states based on current speed
+        val speedDiff = currentSpeed - currentStage.startSpeed
+
+        currentState = when {
+            speedDiff > MAX_SPEED_OVERAGE -> State.DECELERATING
+            speedDiff < -SPEED_TOLERANCE -> State.ACCELERATING
+            abs(speedDiff) <= SPEED_TOLERANCE -> State.HOLDING_SPEED
+            else -> State.ACCELERATING
+        }
+
+        remainingDistance = currentStage.gapDistance
         lastUpdateTime = System.currentTimeMillis()
+        updateUI("Cycle ${currentCycleCount + 1} of ${currentStage.numberOfStops}")
         updateProgress()
         updateInstructions()
     }
@@ -242,6 +287,14 @@ class StageManager(
             override fun run() {
                 if (currentState != State.HOLDING_SPEED) return
 
+                // Check if we're still within tolerance
+                val speedDiff = currentSpeed - getCurrentStage().startSpeed
+                if (abs(speedDiff) > SPEED_TOLERANCE) {
+                    currentState = if (speedDiff > 0) State.DECELERATING else State.ACCELERATING
+                    updateInstructions()
+                    return
+                }
+
                 if (countdownSeconds > 0) {
                     instructionTextView.text = "Hold speed for $countdownSeconds seconds"
                     countdownSeconds--
@@ -254,16 +307,31 @@ class StageManager(
         })
     }
 
+
     private fun completeCycle() {
         currentCycleCount++
         val currentStage = getCurrentStage()
 
         if (currentCycleCount < currentStage.numberOfStops) {
-            startCycle()
+            // When starting the next cycle, immediately check if we're at the right speed
+            val speedDiff = currentSpeed - currentStage.startSpeed
+            currentState = when {
+                speedDiff > MAX_SPEED_OVERAGE -> State.DECELERATING
+                speedDiff < -SPEED_TOLERANCE -> State.ACCELERATING
+                else -> State.HOLDING_SPEED
+            }
+
+            remainingDistance = currentStage.gapDistance
+            updateProgress()
+            updateInstructions()
+
+            // If we're already at holding speed, start the countdown
+            if (currentState == State.HOLDING_SPEED) {
+                startSpeedHoldingTimer()
+            }
         } else {
             completeStage()
         }
-        updateProgress()
     }
 
     private fun completeStage() {
