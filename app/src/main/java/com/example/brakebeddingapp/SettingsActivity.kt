@@ -21,7 +21,7 @@ import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
 
 class SettingsActivity : AppCompatActivity() {
-    private val stages = mutableListOf<BeddingStage>()
+    private val stages = mutableListOf<Stage>()
     private lateinit var adapter: StagesAdapter
     private lateinit var recyclerView: RecyclerView
     private lateinit var brakingIntensitySpinner: Spinner
@@ -34,8 +34,10 @@ class SettingsActivity : AppCompatActivity() {
         val startSpeedEditText = findViewById<EditText>(R.id.startSpeedEditText)
         val targetSpeedEditText = findViewById<EditText>(R.id.targetSpeedEditText)
         val gapDistanceEditText = findViewById<EditText>(R.id.gapDistanceEditText)
+        val cooldownDistanceEditText = findViewById<EditText>(R.id.cooldownDistanceEditText)
         brakingIntensitySpinner = findViewById(R.id.brakingIntensitySpinner)
         val addStageButton = findViewById<Button>(R.id.addStageButton)
+        val addCooldownButton = findViewById<Button>(R.id.addCooldownButton)
         val saveStagesButton = findViewById<Button>(R.id.saveStagesButton)
         recyclerView = findViewById(R.id.stagesRecyclerView)
 
@@ -74,12 +76,37 @@ class SettingsActivity : AppCompatActivity() {
                 gapDistanceEditText.text.clear()
                 brakingIntensitySpinner.setSelection(0)
 
-                // Show confirmation
                 Snackbar.make(recyclerView, "Stage added", Snackbar.LENGTH_SHORT).show()
             } catch (e: NumberFormatException) {
                 Toast.makeText(this, "Please fill all fields with valid numbers", Toast.LENGTH_SHORT).show()
             }
         }
+
+        addCooldownButton.setOnClickListener {
+            try {
+                val distance = cooldownDistanceEditText.text.toString().toDouble()
+                if (distance <= 0) {
+                    Toast.makeText(this, "Distance must be greater than 0", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
+                // Only allow one cooldown stage at the end
+                if (stages.any { it is CooldownStage }) {
+                    Toast.makeText(this, "Cooldown stage already exists. Delete it first to add a new one.", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
+                val cooldownStage = CooldownStage(distance)
+                stages.add(cooldownStage)
+                adapter.notifyItemInserted(stages.size - 1)
+
+                cooldownDistanceEditText.text.clear()
+                Snackbar.make(recyclerView, "Cooldown stage added", Snackbar.LENGTH_SHORT).show()
+            } catch (e: NumberFormatException) {
+                Toast.makeText(this, "Please enter a valid distance", Toast.LENGTH_SHORT).show()
+            }
+        }
+
 
         saveStagesButton.setOnClickListener {
             saveStages()

@@ -71,11 +71,31 @@
         android:layout_height="wrap_content"
         android:text="Add Stage"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cooldown Distance (miles):"
+        android:layout_marginTop="16dp"/>
+
+    <EditText
+        android:id="@+id/cooldownDistanceEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"/>
+
+    <Button
+        android:id="@+id/addCooldownButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Cooldown Stage"
+        android:layout_marginTop="8dp"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/stagesRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:layout_marginTop="16dp"/>
 
     <Button
         android:id="@+id/saveStagesButton"

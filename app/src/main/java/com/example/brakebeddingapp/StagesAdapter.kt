@@ -7,7 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class StagesAdapter(
-    private val stages: List<BeddingStage>
+    private val stages: List<Stage>
 ) : RecyclerView.Adapter<StagesAdapter.StageViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StageViewHolder {
@@ -25,17 +25,24 @@ class StagesAdapter(
     inner class StageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val stageInfoTextView: TextView = itemView.findViewById(R.id.stageInfoTextView)
 
-        fun bind(stage: BeddingStage, stageNumber: Int) {
-            val brakingText = stage.brakingIntensity?.let { "Braking: ${it.displayName}" } ?: "Braking: Not specified"
+        fun bind(stage: Stage, stageNumber: Int) {
+            val text = when (stage) {
+                is BeddingStage -> """
+                    Stage $stageNumber (Bedding)
+                    Stops: ${stage.numberOfStops}
+                    Start Speed: ${stage.startSpeed} mph
+                    Target Speed: ${stage.targetSpeed} mph
+                    Gap Distance: ${stage.gapDistance} miles
+                    Braking: ${stage.brakingIntensity.displayName}
+                """.trimIndent()
 
-            stageInfoTextView.text = """
-                Stage $stageNumber
-                Stops: ${stage.numberOfStops}
-                Start Speed: ${stage.startSpeed} mph
-                Target Speed: ${stage.targetSpeed} mph
-                Gap Distance: ${stage.gapDistance} miles
-                $brakingText
-            """.trimIndent()
+                is CooldownStage -> """
+                    Stage $stageNumber (Cooldown)
+                    Distance: ${stage.distance} miles
+                    Instructions: Drive without heavy braking to cool brakes
+                """.trimIndent()
+            }
+            stageInfoTextView.text = text
         }
     }
 }

@@ -17,11 +17,24 @@ enum class BrakingIntensity(val displayName: String) {
     }
 }
 
+sealed class Stage : Parcelable {
+    abstract val type: String
+}
+
 @Parcelize
 data class BeddingStage(
     val numberOfStops: Int,
     val startSpeed: Double,
     val targetSpeed: Double,
     val gapDistance: Double,
-    val brakingIntensity: BrakingIntensity? = null  // Make nullable with default value
-) : Parcelable
+    val brakingIntensity: BrakingIntensity
+) : Stage() {
+    override val type = "bedding"
+}
+
+@Parcelize
+data class CooldownStage(
+    val distance: Double
+) : Stage() {
+    override val type = "cooldown"
+}
