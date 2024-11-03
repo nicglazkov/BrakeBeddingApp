@@ -49,4 +49,11 @@
         android:layout_height="wrap_content"
         android:text="Settings"/>
 
+    <Button
+        android:id="@+id/helpButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Help Guide"
+        android:layout_marginTop="8dp"/>
+
 </LinearLayout>

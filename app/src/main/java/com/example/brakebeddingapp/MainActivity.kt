@@ -41,6 +41,9 @@ class MainActivity : AppCompatActivity(), LocationListener {
         val startButton = findViewById<Button>(R.id.startButton)
         val settingsButton = findViewById<Button>(R.id.settingsButton)
         val progressTextView = findViewById<TextView>(R.id.stageProgressTextView)
+        findViewById<Button>(R.id.helpButton).setOnClickListener {
+            HelpGuideDialog().show(supportFragmentManager, "help_guide")
+        }
 
         stageManager = StageManager(
             context = this,
