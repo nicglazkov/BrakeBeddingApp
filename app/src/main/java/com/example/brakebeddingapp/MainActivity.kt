@@ -70,6 +70,12 @@ class MainActivity : AppCompatActivity(), LocationListener {
         handler.post(speedUpdateRunnable)
     }
 
+    override fun onResume() {
+        super.onResume()
+        // Reload stages when returning to the activity
+        stageManager.reloadStages()
+    }
+
     private fun requestLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
             ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {

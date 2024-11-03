@@ -41,6 +41,7 @@ class StageManager(
 
     init {
         loadStages()
+        updateUI("Ready to start")
     }
 
     private fun handleDrivingGap() {
@@ -78,6 +79,11 @@ class StageManager(
     }
 
     private fun updateProgress() {
+        if (stages.isEmpty()) {
+            progressTextView.text = "No stages configured"
+            return
+        }
+
         val currentStage = getCurrentStage()
         val stageInfo = StringBuilder()
 
@@ -186,6 +192,9 @@ class StageManager(
     }
 
     private fun getCurrentStage(): BeddingStage {
+        if (stages.isEmpty()) {
+            throw IllegalStateException("No stages available")
+        }
         return stages[currentStageIndex]
     }
 
@@ -305,6 +314,21 @@ class StageManager(
                 }
             }
         })
+    }
+
+    fun reloadStages() {
+        loadStages()
+        // Reset state if we're not currently running a procedure
+        if (currentState == State.IDLE) {
+            currentStageIndex = 0
+            currentCycleCount = 0
+            if (stages.isEmpty()) {
+                updateUI("No stages configured. Please add stages in Settings.")
+            } else {
+                updateUI("Ready to start")
+            }
+            updateProgress()
+        }
     }
 
 
