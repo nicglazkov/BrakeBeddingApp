@@ -26,8 +26,9 @@ class StageManager(
     private var countdownSeconds = 3
     private var remainingDistance = 0.0
     private var lastUpdateTime = System.currentTimeMillis()
-    private val SPEED_TOLERANCE = 2.0  // mph
-    private val MAX_SPEED_OVERAGE = 5.0  // mph
+    private var SPEED_TOLERANCE = 2.0  // mph
+    private var MAX_SPEED_OVERAGE = 5.0  // mph
+    private var MIN_SPEED_UNDERAGE = 1.0  // mph
 
     private enum class State {
         IDLE,
@@ -41,7 +42,15 @@ class StageManager(
 
     init {
         loadStages()
+        loadThresholds()
         updateUI("Ready to start")
+    }
+
+    private fun loadThresholds() {
+        val sharedPreferences = context.getSharedPreferences("BrakeBeddingApp", Context.MODE_PRIVATE)
+        SPEED_TOLERANCE = sharedPreferences.getString("speed_tolerance", "2.0")?.toDouble() ?: 2.0
+        MAX_SPEED_OVERAGE = sharedPreferences.getString("max_speed_overage", "5.0")?.toDouble() ?: 5.0
+        MIN_SPEED_UNDERAGE = sharedPreferences.getString("min_speed_underage", "1.0")?.toDouble() ?: 1.0
     }
 
     private fun handleDrivingGap() {
@@ -118,7 +127,7 @@ class StageManager(
 
         currentState = when {
             speedDiff > MAX_SPEED_OVERAGE -> State.DECELERATING
-            speedDiff < -SPEED_TOLERANCE -> State.ACCELERATING
+            speedDiff < -MIN_SPEED_UNDERAGE -> State.ACCELERATING
             abs(speedDiff) <= SPEED_TOLERANCE -> State.HOLDING_SPEED
             else -> State.ACCELERATING
         }

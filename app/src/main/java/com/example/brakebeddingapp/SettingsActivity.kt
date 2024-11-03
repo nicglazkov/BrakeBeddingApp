@@ -21,6 +21,8 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonSerializer
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
+import android.widget.Button
+import android.widget.EditText
 
 class SettingsActivity : AppCompatActivity() {
     private val stages = mutableListOf<Stage>()
@@ -42,6 +44,25 @@ class SettingsActivity : AppCompatActivity() {
         val addCooldownButton = findViewById<Button>(R.id.addCooldownButton)
         val saveStagesButton = findViewById<Button>(R.id.saveStagesButton)
         recyclerView = findViewById(R.id.stagesRecyclerView)
+
+        val toleranceEditText = findViewById<EditText>(R.id.toleranceEditText)
+        val maxOverageEditText = findViewById<EditText>(R.id.maxOverageEditText)
+        val minUnderageEditText = findViewById<EditText>(R.id.minUnderageEditText)
+        val saveButton = findViewById<Button>(R.id.saveButton)
+
+        val sharedPreferences = getSharedPreferences("BrakeBeddingApp", MODE_PRIVATE)
+        toleranceEditText.setText(sharedPreferences.getString("speed_tolerance", "2.0"))
+        maxOverageEditText.setText(sharedPreferences.getString("max_speed_overage", "5.0"))
+        minUnderageEditText.setText(sharedPreferences.getString("min_speed_underage", "1.0"))
+
+        saveButton.setOnClickListener {
+            val editor = sharedPreferences.edit()
+            editor.putString("speed_tolerance", toleranceEditText.text.toString())
+            editor.putString("max_speed_overage", maxOverageEditText.text.toString())
+            editor.putString("min_speed_underage", minUnderageEditText.text.toString())
+            editor.apply()
+            finish()
+        }
 
         // Setup spinner
         val intensityAdapter = ArrayAdapter(

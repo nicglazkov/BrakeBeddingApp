@@ -108,5 +108,49 @@
             android:layout_marginTop="16dp"
             android:text="Save Stages"/>
 
+        <!-- New fields for speed thresholds -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Speed Tolerance (mph):"
+            android:layout_marginTop="16dp"/>
+
+        <EditText
+            android:id="@+id/toleranceEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Max Speed Overage (mph):"
+            android:layout_marginTop="8dp"/>
+
+        <EditText
+            android:id="@+id/maxOverageEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Min Speed Underage (mph):"
+            android:layout_marginTop="8dp"/>
+
+        <EditText
+            android:id="@+id/minUnderageEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"/>
+
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Save Thresholds"
+            android:layout_marginTop="16dp"/>
+
     </LinearLayout>
 </ScrollView>
