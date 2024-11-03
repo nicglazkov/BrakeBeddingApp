@@ -14,11 +14,11 @@ An Android app to help safely and effectively bed in new brake pads and rotors. 
 
 ## Screenshots
 
-![screenshot of main screen showing speed monitoring and instructions](assets/speed_monitoring.png)
-
-![screenshot of settings screen where you configure stages](assets/settings_menu.png)
-
-![screenshot of help guide](assets/speed_monitoring.png)
+<p align="center">
+  <img src="assets/speed_monitoring.png" alt="screenshot of main screen showing speed monitoring and instructions" width="30%" />
+  <img src="assets/settings_menu.png" alt="screenshot of settings screen where you configure stages" width="30%" />
+  <img src="assets/help_guide.png" alt="screenshot of help guide" width="30%" />
+</p>
 
 ## Installation
 
