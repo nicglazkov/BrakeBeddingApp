@@ -22,6 +22,7 @@ class MainActivity : AppCompatActivity(), LocationListener {
     private lateinit var stageManager: StageManager
     private lateinit var locationManager: LocationManager
     private val handler = Handler(Looper.getMainLooper())
+
     private var lastSpeed = 0.0
     private val updateInterval = 333L // ~3Hz (1000ms / 3)
 
@@ -39,11 +40,18 @@ class MainActivity : AppCompatActivity(), LocationListener {
         val speedTextView = findViewById<TextView>(R.id.speedTextView)
         val instructionTextView = findViewById<TextView>(R.id.instructionTextView)
         val statusView = findViewById<View>(R.id.statusView)
+        val progressView = findViewById<StageProgressView>(R.id.stageProgressView)
         val startButton = findViewById<Button>(R.id.startButton)
         val settingsButton = findViewById<Button>(R.id.settingsButton)
 
-        stageManager = StageManager(this, speedTextView, instructionTextView, statusView, handler)
-
+        stageManager = StageManager(
+            this,
+            speedTextView,
+            instructionTextView,
+            statusView,
+            progressView,
+            handler
+        )
         settingsButton.setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
         }

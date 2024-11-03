@@ -15,6 +15,7 @@ class StageManager(
     private val speedTextView: TextView,
     private val instructionTextView: TextView,
     private val statusView: View,
+    private val progressView: StageProgressView,
     private val handler: Handler
 ) {
     private var stages: List<BeddingStage> = listOf()
@@ -57,11 +58,14 @@ class StageManager(
             return
         }
         currentStageIndex = 0
+        currentCycleCount = 0
+        updateProgress()
         startStage()
     }
 
     private fun startStage() {
         currentCycleCount = 0
+        updateProgress()
         updateUI("Starting Stage ${currentStageIndex + 1}")
         startCycle()
     }
@@ -71,7 +75,12 @@ class StageManager(
         remainingDistance = getCurrentStage().gapDistance
         lastUpdateTime = System.currentTimeMillis()
         updateUI("Cycle ${currentCycleCount + 1} of ${getCurrentStage().numberOfStops}")
+        updateProgress()
         updateInstructions()
+    }
+
+    private fun updateProgress() {
+        progressView.updateProgress(stages, currentStageIndex, currentCycleCount)
     }
 
     private fun getCurrentStage(): BeddingStage {
@@ -239,6 +248,7 @@ class StageManager(
 
     private fun completeCycle() {
         currentCycleCount++
+        updateProgress()
         val currentStage = getCurrentStage()
 
         if (currentCycleCount < currentStage.numberOfStops) {
@@ -256,6 +266,7 @@ class StageManager(
             currentState = State.IDLE
             updateUI("Procedure Complete!")
         }
+        updateProgress()
     }
 
     private fun updateInstructions() {
