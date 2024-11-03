@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("kotlin-parcelize") // Add this line to enable @Parcelize
 }
 
 android {
@@ -39,7 +40,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.12" // Make sure this matches the Compose compiler version
+        kotlinCompilerExtensionVersion = "1.5.12" // Ensure this matches your Compose version
     }
 }
 

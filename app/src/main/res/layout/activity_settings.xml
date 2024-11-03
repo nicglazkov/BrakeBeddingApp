@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -10,46 +9,41 @@
         android:id="@+id/numberOfStopsEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Number of Stops"
-        android:inputType="number" />
+        android:hint="Number of Stops" />
 
     <EditText
         android:id="@+id/startSpeedEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Start Speed"
-        android:inputType="numberDecimal" />
+        android:hint="Starting Speed (mph)" />
 
     <EditText
         android:id="@+id/targetSpeedEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Target Speed"
-        android:inputType="numberDecimal" />
+        android:hint="Target Speed (mph)" />
 
     <EditText
         android:id="@+id/gapDistanceEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Gap Distance (miles)"
-        android:inputType="numberDecimal" />
+        android:hint="Gap Distance (miles)" />
 
     <Button
         android:id="@+id/addStageButton"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Add Stage" />
+
+    <Button
+        android:id="@+id/saveStagesButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save Stages" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/stagesRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
-    <Button
-        android:id="@+id/startProcedureButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Start Procedure" />
+        android:layout_height="wrap_content"/>
 
 </LinearLayout>
