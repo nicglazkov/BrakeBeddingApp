@@ -61,6 +61,7 @@ class MainActivity : AppCompatActivity(), LocationListener {
         val speedInMps = location.speed
         val speedInMph = speedInMps * 2.23694 // Convert meters/second to miles/hour
         stageManager.updateSpeed(speedInMph)
+        stageManager.updateLocation(location)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
