@@ -17,7 +17,7 @@ class StagesAdapter(
 
     override fun onBindViewHolder(holder: StageViewHolder, position: Int) {
         val stage = stages[position]
-        holder.bind(stage, position + 1)  // Pass position + 1 for stage number
+        holder.bind(stage, position + 1)
     }
 
     override fun getItemCount(): Int = stages.size
@@ -26,12 +26,15 @@ class StagesAdapter(
         private val stageInfoTextView: TextView = itemView.findViewById(R.id.stageInfoTextView)
 
         fun bind(stage: BeddingStage, stageNumber: Int) {
+            val brakingText = stage.brakingIntensity?.let { "Braking: ${it.displayName}" } ?: "Braking: Not specified"
+
             stageInfoTextView.text = """
                 Stage $stageNumber
                 Stops: ${stage.numberOfStops}
                 Start Speed: ${stage.startSpeed} mph
                 Target Speed: ${stage.targetSpeed} mph
                 Gap Distance: ${stage.gapDistance} miles
+                $brakingText
             """.trimIndent()
         }
     }

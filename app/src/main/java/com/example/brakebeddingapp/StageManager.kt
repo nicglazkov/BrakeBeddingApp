@@ -15,7 +15,6 @@ class StageManager(
     private val speedTextView: TextView,
     private val instructionTextView: TextView,
     private val statusView: View,
-    private val progressView: StageProgressView,
     private val handler: Handler
 ) {
     private var stages: List<BeddingStage> = listOf()
@@ -24,10 +23,10 @@ class StageManager(
     private var currentState = State.IDLE
     private var currentSpeed = 0.0
     private var countdownSeconds = 3
-    private val SPEED_TOLERANCE = 2.0  // mph
-    private val MAX_SPEED_OVERAGE = 5.0  // mph
     private var remainingDistance = 0.0
     private var lastUpdateTime = System.currentTimeMillis()
+    private val SPEED_TOLERANCE = 2.0  // mph
+    private val MAX_SPEED_OVERAGE = 5.0  // mph
 
     private enum class State {
         IDLE,
@@ -47,44 +46,13 @@ class StageManager(
         val sharedPreferences = context.getSharedPreferences("BrakeBeddingApp", Context.MODE_PRIVATE)
         val stagesJson = sharedPreferences.getString("stages", null)
         if (stagesJson != null) {
-            val type = object : TypeToken<List<BeddingStage>>() {}.type
-            stages = Gson().fromJson(stagesJson, type) ?: listOf()
+            try {
+                val type = object : TypeToken<List<BeddingStage>>() {}.type
+                stages = Gson().fromJson(stagesJson, type) ?: listOf()
+            } catch (e: Exception) {
+                stages = listOf()
+            }
         }
-    }
-
-    fun startProcedure() {
-        if (stages.isEmpty()) {
-            updateUI("No stages available. Please configure stages in Settings.")
-            return
-        }
-        currentStageIndex = 0
-        currentCycleCount = 0
-        updateProgress()
-        startStage()
-    }
-
-    private fun startStage() {
-        currentCycleCount = 0
-        updateProgress()
-        updateUI("Starting Stage ${currentStageIndex + 1}")
-        startCycle()
-    }
-
-    private fun startCycle() {
-        checkInitialSpeedState()
-        remainingDistance = getCurrentStage().gapDistance
-        lastUpdateTime = System.currentTimeMillis()
-        updateUI("Cycle ${currentCycleCount + 1} of ${getCurrentStage().numberOfStops}")
-        updateProgress()
-        updateInstructions()
-    }
-
-    private fun updateProgress() {
-        progressView.updateProgress(stages, currentStageIndex, currentCycleCount)
-    }
-
-    private fun getCurrentStage(): BeddingStage {
-        return stages[currentStageIndex]
     }
 
     private fun checkInitialSpeedState() {
@@ -97,6 +65,30 @@ class StageManager(
             abs(speedDiff) <= SPEED_TOLERANCE -> State.HOLDING_SPEED
             else -> State.ACCELERATING
         }
+    }
+
+    fun startProcedure() {
+        if (stages.isEmpty()) {
+            updateUI("No stages available. Please configure stages in Settings.")
+            return
+        }
+        currentStageIndex = 0
+        currentCycleCount = 0
+        startStage()
+    }
+
+    private fun startStage() {
+        currentCycleCount = 0
+        updateUI("Starting Stage ${currentStageIndex + 1}")
+        startCycle()
+    }
+
+    private fun startCycle() {
+        checkInitialSpeedState()
+        remainingDistance = getCurrentStage().gapDistance
+        lastUpdateTime = System.currentTimeMillis()
+        updateUI("Cycle ${currentCycleCount + 1} of ${getCurrentStage().numberOfStops}")
+        updateInstructions()
     }
 
     fun updateSpeed(newSpeed: Double) {
@@ -129,40 +121,8 @@ class StageManager(
         }
     }
 
-    // We don't need updateLocation anymore since we're calculating based on speed
-    fun updateLocation(location: android.location.Location) {
-        // This can be empty now or used just for backup distance calculation
-    }
-
-
-    private fun updateGapDistance() {
-        val timeEstimate = if (currentSpeed > 0) {
-            (remainingDistance / currentSpeed) * 60.0 // minutes
-        } else {
-            0.0
-        }
-
-        val minutesRemaining = timeEstimate.toInt()
-        val secondsRemaining = ((timeEstimate - minutesRemaining) * 60).toInt()
-
-        val timeString = if (timeEstimate > 0) {
-            if (minutesRemaining > 0) {
-                "$minutesRemaining:${String.format("%02d", secondsRemaining)} min"
-            } else {
-                "$secondsRemaining sec"
-            }
-        } else {
-            ""
-        }
-
-        val distanceStr = String.format("%.2f", remainingDistance)
-        val message = if (remainingDistance > 0) {
-            "$distanceStr miles left${if (timeString.isNotEmpty()) ", $timeString" else ""}"
-        } else {
-            "Distance complete"
-        }
-
-        instructionTextView.text = message
+    private fun getCurrentStage(): BeddingStage {
+        return stages[currentStageIndex]
     }
 
     private fun handleDecelerating() {
@@ -223,9 +183,38 @@ class StageManager(
         if (currentSpeed <= currentStage.targetSpeed) {
             currentState = State.DRIVING_GAP
             remainingDistance = currentStage.gapDistance
-            lastUpdateTime = System.currentTimeMillis()
             updateInstructions()
         }
+    }
+
+    private fun updateGapDistance() {
+        val timeEstimate = if (currentSpeed > 0) {
+            (remainingDistance / currentSpeed) * 60.0 // minutes
+        } else {
+            0.0
+        }
+
+        val minutesRemaining = timeEstimate.toInt()
+        val secondsRemaining = ((timeEstimate - minutesRemaining) * 60).toInt()
+
+        val timeString = if (timeEstimate > 0) {
+            if (minutesRemaining > 0) {
+                "$minutesRemaining:${String.format("%02d", secondsRemaining)} min"
+            } else {
+                "$secondsRemaining sec"
+            }
+        } else {
+            ""
+        }
+
+        val distanceStr = String.format("%.2f", remainingDistance)
+        val message = if (remainingDistance > 0) {
+            "$distanceStr miles left${if (timeString.isNotEmpty()) ", $timeString" else ""}"
+        } else {
+            "Distance complete"
+        }
+
+        instructionTextView.text = message
     }
 
     private fun startSpeedHoldingTimer() {
@@ -248,7 +237,6 @@ class StageManager(
 
     private fun completeCycle() {
         currentCycleCount++
-        updateProgress()
         val currentStage = getCurrentStage()
 
         if (currentCycleCount < currentStage.numberOfStops) {
@@ -266,18 +254,32 @@ class StageManager(
             currentState = State.IDLE
             updateUI("Procedure Complete!")
         }
-        updateProgress()
     }
 
     private fun updateInstructions() {
         val currentStage = getCurrentStage()
-        val message = when (currentState) {
-            State.DECELERATING -> "SLOW DOWN to ${currentStage.startSpeed.toInt()} mph"
-            State.ACCELERATING -> "Accelerate to ${currentStage.startSpeed.toInt()} mph"
-            State.HOLDING_SPEED -> "Hold speed at ${currentStage.startSpeed.toInt()} mph"
-            State.BRAKING -> "BRAKE to ${currentStage.targetSpeed.toInt()} mph"
-            State.DRIVING_GAP -> "${String.format("%.2f", remainingDistance)} miles left"
-            else -> ""
+        val message = StringBuilder()
+
+        when (currentState) {
+            State.DECELERATING -> {
+                message.append("SLOW DOWN to ${currentStage.startSpeed.toInt()} mph")
+            }
+            State.ACCELERATING -> {
+                message.append("Accelerate to ${currentStage.startSpeed.toInt()} mph")
+            }
+            State.HOLDING_SPEED -> {
+                message.append("Hold speed at ${currentStage.startSpeed.toInt()} mph")
+            }
+            State.BRAKING -> {
+                currentStage.brakingIntensity?.let { intensity ->
+                    message.append("${intensity.displayName}\n")
+                }
+                message.append("BRAKE to ${currentStage.targetSpeed.toInt()} mph")
+            }
+            State.DRIVING_GAP -> {
+                message.append("${String.format("%.2f", remainingDistance)} miles left")
+            }
+            else -> {}
         }
 
         val color = when (currentState) {
@@ -289,7 +291,7 @@ class StageManager(
             else -> android.R.color.darker_gray
         }
 
-        instructionTextView.text = message
+        instructionTextView.text = message.toString()
         statusView.setBackgroundColor(ContextCompat.getColor(context, color))
     }
 

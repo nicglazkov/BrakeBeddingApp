@@ -1,7 +1,6 @@
 package com.example.brakebeddingapp
 
 import android.Manifest
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
@@ -15,7 +14,6 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 
 class MainActivity : AppCompatActivity(), LocationListener {
 
@@ -40,18 +38,17 @@ class MainActivity : AppCompatActivity(), LocationListener {
         val speedTextView = findViewById<TextView>(R.id.speedTextView)
         val instructionTextView = findViewById<TextView>(R.id.instructionTextView)
         val statusView = findViewById<View>(R.id.statusView)
-        val progressView = findViewById<StageProgressView>(R.id.stageProgressView)
         val startButton = findViewById<Button>(R.id.startButton)
         val settingsButton = findViewById<Button>(R.id.settingsButton)
 
         stageManager = StageManager(
-            this,
-            speedTextView,
-            instructionTextView,
-            statusView,
-            progressView,
-            handler
+            context = this,
+            speedTextView = speedTextView,
+            instructionTextView = instructionTextView,
+            statusView = statusView,
+            handler = handler
         )
+
         settingsButton.setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
@@ -82,6 +79,12 @@ class MainActivity : AppCompatActivity(), LocationListener {
         val speedInMps = location.speed
         lastSpeed = speedInMps * 2.23694 // Convert meters/second to miles/hour
     }
+
+    // Required LocationListener interface methods
+    override fun onProviderEnabled(provider: String) {}
+    override fun onProviderDisabled(provider: String) {}
+    @Deprecated("Deprecated in Java")
+    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)

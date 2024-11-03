@@ -1,49 +1,86 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Number of Stops:"
+        android:layout_marginTop="8dp"/>
+
     <EditText
         android:id="@+id/numberOfStopsEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Number of Stops" />
+        android:inputType="number"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start Speed (mph):"
+        android:layout_marginTop="8dp"/>
 
     <EditText
         android:id="@+id/startSpeedEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Starting Speed (mph)" />
+        android:inputType="numberDecimal"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Target Speed (mph):"
+        android:layout_marginTop="8dp"/>
 
     <EditText
         android:id="@+id/targetSpeedEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Target Speed (mph)" />
+        android:inputType="numberDecimal"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Gap Distance (miles):"
+        android:layout_marginTop="8dp"/>
 
     <EditText
         android:id="@+id/gapDistanceEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Gap Distance (miles)" />
+        android:inputType="numberDecimal"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Braking Intensity:"
+        android:layout_marginTop="8dp"/>
+
+    <Spinner
+        android:id="@+id/brakingIntensitySpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"/>
 
     <Button
         android:id="@+id/addStageButton"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add Stage" />
-
-    <Button
-        android:id="@+id/saveStagesButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Save Stages" />
+        android:text="Add Stage"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/stagesRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <Button
+        android:id="@+id/saveStagesButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save Stages"/>
 
 </LinearLayout>
