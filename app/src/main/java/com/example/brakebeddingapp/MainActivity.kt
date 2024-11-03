@@ -40,12 +40,14 @@ class MainActivity : AppCompatActivity(), LocationListener {
         val statusView = findViewById<View>(R.id.statusView)
         val startButton = findViewById<Button>(R.id.startButton)
         val settingsButton = findViewById<Button>(R.id.settingsButton)
+        val progressTextView = findViewById<TextView>(R.id.stageProgressTextView)
 
         stageManager = StageManager(
             context = this,
             speedTextView = speedTextView,
             instructionTextView = instructionTextView,
             statusView = statusView,
+            progressTextView = progressTextView,  // Add this line
             handler = handler
         )
 

@@ -15,6 +15,7 @@ class StageManager(
     private val speedTextView: TextView,
     private val instructionTextView: TextView,
     private val statusView: View,
+    private val progressTextView: TextView,
     private val handler: Handler
 ) {
     private var stages: List<BeddingStage> = listOf()
@@ -40,6 +41,22 @@ class StageManager(
 
     init {
         loadStages()
+    }
+
+    private fun updateProgress() {
+        val currentStage = getCurrentStage()
+        val stageInfo = StringBuilder()
+
+        // Show stage progress
+        stageInfo.append("Stage ${currentStageIndex + 1} of ${stages.size}\n")
+        stageInfo.append("Cycle ${currentCycleCount + 1} of ${currentStage.numberOfStops}\n")
+
+        // Show braking intensity if available
+        currentStage.brakingIntensity?.let { intensity ->
+            stageInfo.append("Using ${intensity.displayName}")
+        }
+
+        progressTextView.text = stageInfo.toString()
     }
 
     private fun loadStages() {
@@ -74,12 +91,14 @@ class StageManager(
         }
         currentStageIndex = 0
         currentCycleCount = 0
+        updateProgress()
         startStage()
     }
 
     private fun startStage() {
         currentCycleCount = 0
         updateUI("Starting Stage ${currentStageIndex + 1}")
+        updateProgress()
         startCycle()
     }
 
@@ -87,7 +106,7 @@ class StageManager(
         checkInitialSpeedState()
         remainingDistance = getCurrentStage().gapDistance
         lastUpdateTime = System.currentTimeMillis()
-        updateUI("Cycle ${currentCycleCount + 1} of ${getCurrentStage().numberOfStops}")
+        updateProgress()
         updateInstructions()
     }
 
@@ -244,6 +263,7 @@ class StageManager(
         } else {
             completeStage()
         }
+        updateProgress()
     }
 
     private fun completeStage() {
@@ -253,6 +273,7 @@ class StageManager(
         } else {
             currentState = State.IDLE
             updateUI("Procedure Complete!")
+            progressTextView.text = "All stages complete!"
         }
     }
 

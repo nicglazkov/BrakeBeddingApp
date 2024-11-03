@@ -6,10 +6,12 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <com.example.brakebeddingapp.StageProgressView
-        android:id="@+id/stageProgressView"
+    <TextView
+        android:id="@+id/stageProgressTextView"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:gravity="center"
         android:layout_marginBottom="16dp"/>
 
     <TextView
