@@ -7,8 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class StagesAdapter(
-    private val stages: List<BeddingStage>,
-    private val onStageLongClick: (Int) -> Unit
+    private val stages: List<BeddingStage>
 ) : RecyclerView.Adapter<StagesAdapter.StageViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StageViewHolder {
@@ -18,13 +17,7 @@ class StagesAdapter(
 
     override fun onBindViewHolder(holder: StageViewHolder, position: Int) {
         val stage = stages[position]
-        holder.bind(stage)
-
-        // Set long-click listener to delete the item
-        holder.itemView.setOnLongClickListener {
-            onStageLongClick(position)
-            true
-        }
+        holder.bind(stage, position + 1)  // Pass position + 1 for stage number
     }
 
     override fun getItemCount(): Int = stages.size
@@ -32,8 +25,14 @@ class StagesAdapter(
     inner class StageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val stageInfoTextView: TextView = itemView.findViewById(R.id.stageInfoTextView)
 
-        fun bind(stage: BeddingStage) {
-            stageInfoTextView.text = "Stops: ${stage.numberOfStops}, Start: ${stage.startSpeed} mph, Target: ${stage.targetSpeed} mph, Gap: ${stage.gapDistance} miles"
+        fun bind(stage: BeddingStage, stageNumber: Int) {
+            stageInfoTextView.text = """
+                Stage $stageNumber
+                Stops: ${stage.numberOfStops}
+                Start Speed: ${stage.startSpeed} mph
+                Target Speed: ${stage.targetSpeed} mph
+                Gap Distance: ${stage.gapDistance} miles
+            """.trimIndent()
         }
     }
 }

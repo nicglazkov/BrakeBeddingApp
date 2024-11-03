@@ -22,6 +22,15 @@ class MainActivity : AppCompatActivity(), LocationListener {
     private lateinit var stageManager: StageManager
     private lateinit var locationManager: LocationManager
     private val handler = Handler(Looper.getMainLooper())
+    private var lastSpeed = 0.0
+    private val updateInterval = 333L // ~3Hz (1000ms / 3)
+
+    private val speedUpdateRunnable = object : Runnable {
+        override fun run() {
+            stageManager.updateSpeed(lastSpeed)
+            handler.postDelayed(this, updateInterval)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +55,9 @@ class MainActivity : AppCompatActivity(), LocationListener {
         // Initialize location manager for speed tracking
         locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
         requestLocationUpdates()
+
+        // Start the speed update timer
+        handler.post(speedUpdateRunnable)
     }
 
     private fun requestLocationUpdates() {
@@ -54,17 +66,17 @@ class MainActivity : AppCompatActivity(), LocationListener {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
             return
         }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1f, this)
+        // Request frequent updates from GPS, but we'll throttle the UI updates ourselves
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0f, this)
     }
 
     override fun onLocationChanged(location: Location) {
         val speedInMps = location.speed
-        val speedInMph = speedInMps * 2.23694 // Convert meters/second to miles/hour
-        stageManager.updateSpeed(speedInMph)
-        stageManager.updateLocation(location)
+        lastSpeed = speedInMps * 2.23694 // Convert meters/second to miles/hour
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 1 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             requestLocationUpdates()
         }
@@ -73,5 +85,6 @@ class MainActivity : AppCompatActivity(), LocationListener {
     override fun onDestroy() {
         super.onDestroy()
         locationManager.removeUpdates(this)
+        handler.removeCallbacks(speedUpdateRunnable)
     }
 }

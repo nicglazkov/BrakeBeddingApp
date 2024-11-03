@@ -28,7 +28,7 @@ class StageManager(
 
     private enum class State {
         IDLE,
-        DECELERATING,  // New state for when speed is too high
+        DECELERATING,  // State for when speed is too high
         ACCELERATING,
         HOLDING_SPEED,
         COUNTDOWN,
@@ -65,15 +65,19 @@ class StageManager(
     }
 
     private fun startCycle() {
-        // Check initial speed against target speed
+        // Check initial speed state
         checkInitialSpeedState()
         startLocation = null
-        updateUI("Cycle ${currentCycleCount + 1}")
+        updateUI("Cycle ${currentCycleCount + 1} of ${getCurrentStage().numberOfStops}")
         updateInstructions()
     }
 
+    private fun getCurrentStage(): BeddingStage {
+        return stages[currentStageIndex]
+    }
+
     private fun checkInitialSpeedState() {
-        val currentStage = stages[currentStageIndex]
+        val currentStage = getCurrentStage()
         val speedDiff = currentSpeed - currentStage.startSpeed
 
         currentState = when {
@@ -86,7 +90,8 @@ class StageManager(
 
     fun updateSpeed(newSpeed: Double) {
         currentSpeed = newSpeed
-        speedTextView.text = "Speed: ${newSpeed.toInt()} mph"
+        // Format speed with one decimal place
+        speedTextView.text = "Speed: ${String.format("%.1f", newSpeed)} mph"
 
         when (currentState) {
             State.DECELERATING -> handleDecelerating()
@@ -105,9 +110,13 @@ class StageManager(
                     startLocation = location
                 } else {
                     val distanceTraveled = startLocation!!.distanceTo(location) * 0.000621371 // Convert meters to miles
-                    val currentStage = stages[currentStageIndex]
+                    val currentStage = getCurrentStage()
                     if (distanceTraveled >= currentStage.gapDistance) {
                         completeCycle()
+                    } else {
+                        // Update remaining distance
+                        val remainingDistance = (currentStage.gapDistance - distanceTraveled).toFloat()
+                        updateUI("Cycle ${currentCycleCount + 1}: Drive ${String.format("%.1f", remainingDistance)} more miles")
                     }
                 }
             }
@@ -116,7 +125,7 @@ class StageManager(
     }
 
     private fun handleDecelerating() {
-        val currentStage = stages[currentStageIndex]
+        val currentStage = getCurrentStage()
         val speedDiff = currentSpeed - currentStage.startSpeed
 
         when {
@@ -139,7 +148,7 @@ class StageManager(
     }
 
     private fun handleAccelerating() {
-        val currentStage = stages[currentStageIndex]
+        val currentStage = getCurrentStage()
         val speedDiff = currentSpeed - currentStage.startSpeed
 
         when {
@@ -158,7 +167,7 @@ class StageManager(
     }
 
     private fun handleHoldingSpeed() {
-        val currentStage = stages[currentStageIndex]
+        val currentStage = getCurrentStage()
         val speedDiff = currentSpeed - currentStage.startSpeed
 
         when {
@@ -174,7 +183,7 @@ class StageManager(
     }
 
     private fun handleBraking() {
-        val currentStage = stages[currentStageIndex]
+        val currentStage = getCurrentStage()
         if (currentSpeed <= currentStage.targetSpeed) {
             currentState = State.DRIVING_GAP
             startLocation = null
@@ -206,7 +215,7 @@ class StageManager(
 
     private fun completeCycle() {
         currentCycleCount++
-        val currentStage = stages[currentStageIndex]
+        val currentStage = getCurrentStage()
 
         if (currentCycleCount < currentStage.numberOfStops) {
             startCycle()
@@ -226,7 +235,7 @@ class StageManager(
     }
 
     private fun updateInstructions() {
-        val currentStage = stages[currentStageIndex]
+        val currentStage = getCurrentStage()
         val message = when (currentState) {
             State.DECELERATING -> "SLOW DOWN to ${currentStage.startSpeed.toInt()} mph"
             State.ACCELERATING -> "Accelerate to ${currentStage.startSpeed.toInt()} mph"

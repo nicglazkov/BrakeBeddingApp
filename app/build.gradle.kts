@@ -54,6 +54,8 @@ dependencies {
 
     implementation("com.google.code.gson:gson:2.8.8")
 
+    implementation("com.google.android.material:material:1.11.0")
+
     // Compose dependencies
     implementation("androidx.compose.ui:ui:1.5.0")
     implementation("androidx.compose.material:material:1.5.0")
