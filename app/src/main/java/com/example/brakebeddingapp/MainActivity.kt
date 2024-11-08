@@ -14,6 +14,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import android.view.WindowManager
 
 class MainActivity : AppCompatActivity(), LocationListener {
 
@@ -34,6 +35,7 @@ class MainActivity : AppCompatActivity(), LocationListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         val speedTextView = findViewById<TextView>(R.id.speedTextView)
         val instructionTextView = findViewById<TextView>(R.id.instructionTextView)
